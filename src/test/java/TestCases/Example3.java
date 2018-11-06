@@ -73,6 +73,7 @@ public class Example3 {
             e.printStackTrace();
         }
 
+
         PationRecored = driver.findElement(By.xpath("//*[@id=\"content\"]/div[6]/div[2]/span")).getText();
         System.out.println("PationRecored                   "+PationRecored);
         try {
