@@ -3,20 +3,26 @@ package TestCases;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.*;
+
+import java.util.concurrent.TimeUnit;
 
 public class Example3 {
 
     WebDriver driver;
     WebDriverWait Wait;
+    String PationRecored;
 
     @BeforeMethod
     public void SetUp() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
-        Wait =new WebDriverWait(driver,10);
+        Wait = new WebDriverWait(driver, 20);
 
         driver.navigate().to("https://demo.openmrs.org/openmrs/login.htm");
 
@@ -37,7 +43,7 @@ public class Example3 {
     public void Logout() {
         Login();
 
-        driver.findElement(By.cssSelector("[href*=\"logout\"]"));
+        driver.findElement(By.cssSelector("a[href*=\"logout.action\"]")).click();
 
 
     }
@@ -45,12 +51,36 @@ public class Example3 {
     @Test(priority = 3, dependsOnMethods = {"Login"})
     public void RegisteraPatient() {
         Login();
-        driver.findElement(By.cssSelector("[id*=referenceapplication-registr]")).click();
-        if (!driver.findElement(By.cssSelector("[id=checkbox-unknown-patient]")).isSelected()){
-            driver.findElement(By.cssSelector("[id=checkbox-unknown-patient]")).click();
+        driver.findElement(By.cssSelector("[id^=referenceapplication-registrationapp]")).click();
 
+        By CheckBoxPatint = By.id("checkbox-unknown-patient");
+        WebElement CheckBoxPatintEle = Wait.until(ExpectedConditions.visibilityOfElementLocated(CheckBoxPatint));
+
+        if (!CheckBoxPatintEle.isSelected()) {
+            CheckBoxPatintEle.click();
         }
 
+        Select GenderDDL = new Select(driver.findElement(By.id("gender-field")));
+        GenderDDL.selectByVisibleText("Female");
+
+        driver.findElement(By.id("confirmation_label")).click();
+        driver.findElement(By.id("submit")).click();
+
+        try {
+            Thread.sleep(5000);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        PationRecored = driver.findElement(By.xpath("//*[@id=\"content\"]/div[6]/div[2]/span")).getText();
+        System.out.println("PationRecored                   "+PationRecored);
+        try {
+            Thread.sleep(5000);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -88,7 +118,7 @@ public class Example3 {
 
     @AfterMethod
     public void closeDriver() {
-       // driver.quit();
+        driver.quit();
 
     }
 
